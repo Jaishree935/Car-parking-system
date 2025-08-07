@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Car-parking-system
 =======
 # Getting Started with Create React App
@@ -72,3 +73,6 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 >>>>>>> 2651434 (Initialize project using Create React App)
+=======
+smart car parking system
+>>>>>>> d2ff1383bc22dab8c2b1baa084f11abf2227074f
