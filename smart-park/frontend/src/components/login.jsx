@@ -1,6 +1,7 @@
 // src/pages/login.jsx
 import React, { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "../styles/login.css";
 
 export default function Login() {
@@ -14,6 +15,7 @@ export default function Login() {
   const [form, setForm] = useState({ email: "", password: "", remember: false });
   const [showPwd, setShowPwd] = useState(false);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const brand = role === "admin" ? "Admin" : "User";
 
@@ -25,22 +27,39 @@ export default function Login() {
     return Object.keys(e).length === 0;
   }
 
-  function handleSubmit(ev) {
+  async function handleSubmit(ev) {
     ev.preventDefault();
     if (!validate()) return;
-    // Simulate auth flow
-    console.log(`[LOGIN] role=${role}`, form);
-    // You can branch route by role after login:
-    if (role === "admin") {
-      navigate("/dashboard/admin");
-    } else {
-      navigate("/dashboard/user");
+
+    setLoading(true);
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/login", {
+        email: form.email,
+        password: form.password,
+        role,
+      });
+
+      alert("✅ Login successful!");
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      if (res.data.user.role === "admin") {
+        navigate("/dashboard/admin");
+      } else {
+        navigate("/dashboard/user");
+      }
+    } catch (err) {
+      console.error(err);
+      alert(
+        err.response?.data?.message || "❌ Login failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <div className="auth-wrap login-bg">
-        
       <div className="auth-card">
         <div className="auth-head">
           <h2>{brand} Login</h2>
@@ -94,13 +113,17 @@ export default function Login() {
               />
               Remember me
             </label>
-            <a className="link" href="#" onClick={(e)=>e.preventDefault()}>
+            <a className="link" href="#" onClick={(e) => e.preventDefault()}>
               Forgot password?
             </a>
           </div>
 
-          <button className={`cta ${role === "admin" ? "admin" : "user"}`} type="submit">
-            Sign in
+          <button
+            className={`cta ${role === "admin" ? "admin" : "user"}`}
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Signing in..." : "Sign in"}
           </button>
 
           <div className="divider"><span>or</span></div>

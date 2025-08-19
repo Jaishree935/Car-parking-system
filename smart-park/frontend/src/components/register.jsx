@@ -1,6 +1,7 @@
 // src/pages/register.jsx
 import React, { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";  // ✅ axios import
 import "../styles/register.css";
 
 export default function Register() {
@@ -23,6 +24,7 @@ export default function Register() {
   const [showPwd, setShowPwd] = useState(false);
   const [showPwd2, setShowPwd2] = useState(false);
   const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState(""); // ✅ success/error message
 
   function validate() {
     const e = {};
@@ -38,15 +40,24 @@ export default function Register() {
     return Object.keys(e).length === 0;
   }
 
-  function handleSubmit(ev) {
+  async function handleSubmit(ev) {
     ev.preventDefault();
     if (!validate()) return;
 
-    // Simulate register flow
-    console.log(`[REGISTER] role=${role}`, form);
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/register", {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role, // ✅ role (user/admin)
+      });
 
-    // After register go to role-based login
-    navigate(`/login?role=${role}`);
+      setMessage("✅ Registered Successfully!");
+      // navigate to login after 1.5 sec
+      setTimeout(() => navigate(`/login?role=${role}`), 1500);
+    } catch (err) {
+      setMessage("❌ " + (err.response?.data?.message || "Something went wrong"));
+    }
   }
 
   return (
@@ -135,10 +146,15 @@ export default function Register() {
           </label>
           {errors.agree && <span className="error-text">{errors.agree}</span>}
 
-          <button className={`cta ${role === "admin" ? "admin" : "user"}`} type="submit">
+          <button
+            className={`cta ${role === "admin" ? "admin" : "user"}`}
+            type="submit"
+          >
             Create account
           </button>
         </form>
+
+        {message && <p className="popup-message">{message}</p>}
 
         <div className="auth-foot">
           <p>
