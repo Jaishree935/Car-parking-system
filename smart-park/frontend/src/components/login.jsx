@@ -28,36 +28,33 @@ export default function Login() {
   }
 
   async function handleSubmit(ev) {
-    ev.preventDefault();
-    if (!validate()) return;
+  ev.preventDefault();
+  if (!validate()) return;
 
-    setLoading(true);
-    try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
-        email: form.email,
-        password: form.password,
-        role,
-      });
+  setLoading(true);
+  try {
+    const res = await axios.post("http://localhost:5000/api/auth/login", {
+      email: form.email,
+      password: form.password,
+      role,
+    });
 
-      alert("✅ Login successful!");
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+    alert("✅ Login successful!");
+    localStorage.setItem("token", res.data.token);
+    localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      if (res.data.user.role === "admin") {
-        navigate("/dashboard/admin");
-      } else {
-        navigate("/dashboard/user");
-      }
-    } catch (err) {
-      console.error(err);
-      alert(
-        err.response?.data?.message || "❌ Login failed. Please try again."
-      );
-    } finally {
-      setLoading(false);
+    if (res.data.user.role === "admin") {
+      navigate("/dashboard/admin");   // ✅ correct path
+    } else {
+      navigate("/dashboard/user");    // ✅ correct path
     }
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || "❌ Login failed. Please try again.");
+  } finally {
+    setLoading(false);
   }
-
+}
   return (
     <div className="auth-wrap login-bg">
       <div className="auth-card">

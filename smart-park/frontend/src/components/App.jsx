@@ -1,9 +1,13 @@
-// src/components/App.jsx
+ // src/components/App.jsx
 import React from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "../styles/App.css";
-import Login from "../components/login.jsx";
-import Register from "../components/register.jsx";
+import Login from "./login.jsx";
+import Register from "./register.jsx";
+import UserDashboard from "../pages/user/UserDashboard.jsx";
+import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
+import Header from "../pages/user/Header.jsx";
+import Footer from "../pages/user/Footer.jsx";
 
 function HomeHero() {
   const navigate = useNavigate();
@@ -37,9 +41,40 @@ function HomeHero() {
 function App() {
   return (
     <Routes>
+      {/* Landing Page */}
       <Route path="/" element={<HomeHero />} />
+
+      {/* Auth Pages */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+      {/* User Dashboard */}
+      <Route
+        path="/dashboard/user"
+        element={
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-grow p-4">
+              <UserDashboard />
+            </main>
+            <Footer />
+          </div>
+        }
+      />
+
+      {/* Admin Dashboard */}
+      <Route
+        path="/dashboard/admin"
+        element={
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-grow p-4">
+              <AdminDashboard />
+            </main> 
+            <Footer />
+          </div>
+        }
+      />
     </Routes>
   );
 }
