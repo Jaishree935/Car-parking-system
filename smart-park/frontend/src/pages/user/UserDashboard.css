@@ -15,9 +15,9 @@
 
 /* Title */
 .dashboard-title {
-  font-size: 2rem;
+  font-size: 3rem;
   font-weight: 800;
-  color: #b91c1c; /* red-700 */
+  color: white; /* red-700 */
   margin-bottom: 24px;
   letter-spacing: -0.5px;
 }
@@ -143,44 +143,87 @@
 }
 
 /* Explore Section */
+/* Explore Section */
 .explore {
-  margin-top: 30px;
+  margin-top: 40px;
+  text-align: center;
 }
 
 .explore h2 {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
   color: #be123c;
+  letter-spacing: 0.5px;
 }
 
+/* Card container */
 .card-container {
   display: grid;
-  gap: 24px;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* balanced size */
+  justify-items: center;
 }
 
+/* Card style */
 .card {
-  background: linear-gradient(to bottom right, #ffffff, #fff1f2);
-  padding: 24px;
+  background: #fff;
+  padding: 28px 22px;
   border-radius: 18px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
   transition: transform 0.25s, box-shadow 0.25s;
-  border: 1px solid #fecdd3;
+  border: 1px solid #f4d4d9;
+
+  /* ✅ Proper rectangle look */
+  width: 280px;
+  min-height: 240px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
+
 .card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.2);
 }
+
+/* Card Title */
 .card h3 {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 700;
-  margin-bottom: 10px;
-  color: #9f1239;
+  margin-bottom: 12px;
+  color: #be123c;
+  letter-spacing: 0.3px;
 }
+
+/* Card Description */
 .card p {
   color: #374151;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 18px;
+  max-width: 90%;
+}
+
+/* Card Button */
+.card .btn {
+  background: #be123c;
+  color: #fff;
   font-size: 0.95rem;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.card .btn:hover {
+  background: #9f1239;
+  transform: scale(1.05);
 }
 
 /* Buttons */
@@ -314,4 +357,91 @@
   justify-content: center;
   gap: 12px;
   margin-top: 15px;
+}
+
+/* Booking Form */
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-group.half {
+  flex: 1;
+}
+
+.booking-form input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.booking-form input:focus {
+  border-color: #be123c;
+  box-shadow: 0 0 4px rgba(190, 18, 60, 0.3);
+}
+
+/* Background Image */
+.dashboard {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: url("C:/Users/DELL/Desktop/car/Car-parking-system/smart-park/frontend/src/assets/bg1.JPG")
+    no-repeat center center/cover;
+  font-family: 'Inter', sans-serif;
+  backdrop-filter: blur(2px);
+}
+
+/* Spot Grid - Parking Layout */
+.spot-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 18px;
+  margin-top: 20px;
+  padding: 10px;
+}
+
+/* Parking Spot */
+.parking-spot {
+  background: #f3f4f6;
+  border: 3px dashed #9ca3af;
+  border-radius: 12px;
+  text-align: center;
+  padding: 28px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #374151;
+  cursor: pointer;
+  transition: transform 0.25s, background 0.25s, border-color 0.25s;
+  position: relative;
+}
+
+.parking-spot:hover {
+  background: #fca5a5;
+  border-color: #dc2626;
+  transform: scale(1.05);
+  color: white;
+}
+
+.parking-spot.selected {
+  background: #dc2626;
+  border: 3px solid #7f1d1d;
+  color: white;
+  transform: scale(1.08);
+  box-shadow: 0 0 14px rgba(220,38,38,0.6);
+}
+
+/* Confirm Button container */
+.confirm-container {
+  margin-top: 18px;
+  text-align: center;
 }
