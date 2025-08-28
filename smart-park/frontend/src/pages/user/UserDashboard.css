@@ -431,6 +431,20 @@
   transform: scale(1.05);
   color: white;
 }
+/* Booked Spot */
+.parking-spot.booked {
+  background: #fecaca;          /* light red */
+  border: 3px solid #dc2626;    /* red border */
+  color: #7f1d1d;               /* dark text */
+  cursor: not-allowed;          /* disable click */
+  opacity: 0.7;
+  transform: none !important;   /* disable hover scaling */
+}
+.parking-spot.booked:hover {
+  background: #fecaca;
+  color: #7f1d1d;
+  border-color: #dc2626;
+}
 
 .parking-spot.selected {
   background: #dc2626;

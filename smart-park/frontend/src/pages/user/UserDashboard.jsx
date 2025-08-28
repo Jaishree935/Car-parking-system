@@ -8,7 +8,6 @@ function Header({ openAbout, openContact }) {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  // ✅ Fetch logged-in user from backend using token
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -16,16 +15,10 @@ function Header({ openAbout, openContact }) {
         if (!token) return;
 
         const res = await fetch("http://localhost:5000/api/auth/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!res.ok) {
-          console.error("Failed to fetch user");
-          return;
-        }
-
+        if (!res.ok) return console.error("Failed to fetch user");
         const data = await res.json();
         setUser(data.user);
       } catch (err) {
@@ -55,10 +48,18 @@ function Header({ openAbout, openContact }) {
 
       <nav className="nav-center">
         <ul className="nav-links">
-          <li><button onClick={() => window.location.reload()}>Home</button></li>
-          <li><button onClick={openAbout}>About Us</button></li>
-          <li><a href="#explore">Explore</a></li>
-          <li><button onClick={openContact}>Contact Us</button></li>
+          <li>
+            <button onClick={() => window.location.reload()}>Home</button>
+          </li>
+          <li>
+            <button onClick={openAbout}>About Us</button>
+          </li>
+          <li>
+            <a href="#explore">Explore</a>
+          </li>
+          <li>
+            <button onClick={openContact}>Contact Us</button>
+          </li>
         </ul>
       </nav>
 
@@ -73,9 +74,21 @@ function Header({ openAbout, openContact }) {
           <div className="profile-dropdown">
             {user ? (
               <>
-                <p><strong>Name:</strong> {user.name}</p>
-                <p><strong>Email:</strong> {user.email}</p>
-                <button onClick={handleLogout} className="btn logout-btn">
+                <p>
+                  <strong>Name:</strong> {user.name}
+                </p>
+                <p>
+                  <strong>Email:</strong> {user.email}
+                </p>
+                {user.vehicleNumber && (
+                  <p>
+                    <strong>Vehicle:</strong> {user.vehicleNumber}
+                  </p>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="btn logout-btn"
+                >
                   🚪 Logout
                 </button>
               </>
@@ -93,7 +106,9 @@ function Header({ openAbout, openContact }) {
 function Footer() {
   return (
     <footer className="footer">
-      <p>© {new Date().getFullYear()} Smart Parking System | All Rights Reserved</p>
+      <p>
+        © {new Date().getFullYear()} Smart Parking System | All Rights Reserved
+      </p>
     </footer>
   );
 }
@@ -106,7 +121,9 @@ function Explore({ openBooking }) {
         <div className="card">
           <h3>Book a Spot</h3>
           <p>Easily book your parking spot online.</p>
-          <button className="btn" onClick={openBooking}>Book Now</button>
+          <button className="btn" onClick={openBooking}>
+            Book Now
+          </button>
         </div>
         <div className="card">
           <h3>My Bookings</h3>
@@ -125,7 +142,9 @@ function Popup({ title, children, closePopup }) {
       <div className="popup-box">
         <h2>{title}</h2>
         {children}
-        <button onClick={closePopup} className="btn-close">Close</button>
+        <button onClick={closePopup} className="btn-close">
+          Close
+        </button>
       </div>
     </div>
   );
@@ -135,9 +154,16 @@ function Popup({ title, children, closePopup }) {
 function UserDashboard() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
+
+  // Step states
+  const [areaOpen, setAreaOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [spotOpen, setSpotOpen] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
+
+  const [selectedArea, setSelectedArea] = useState(null);
   const [selectedSpot, setSelectedSpot] = useState(null);
+  const [bookedSpots, setBookedSpots] = useState([]);
 
   // Booking form state
   const [bookingData, setBookingData] = useState({
@@ -148,41 +174,84 @@ function UserDashboard() {
     time: "",
   });
 
-  // Contact form state
-  const [contactData, setContactData] = useState({
-    name: "",
-    phone: "",
-    feedback: "",
-  });
-
-  // Reset functions
   const resetBookingForm = () => {
     setBookingData({ name: "", phone: "", carNumber: "", date: "", time: "" });
     setSelectedSpot(null);
-  };
-
-  const resetContactForm = () => {
-    setContactData({ name: "", phone: "", feedback: "" });
   };
 
   const handleBookingChange = (e) => {
     setBookingData({ ...bookingData, [e.target.name]: e.target.value });
   };
 
-  const handleBookingSubmit = (e) => {
+  // Submit booking form → open spot select
+  const handleBookingSubmit = async (e) => {
     e.preventDefault();
     setBookingOpen(false);
     setSpotOpen(true);
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/bookings?date=${bookingData.date}&time=${bookingData.time}`
+      );
+      const data = await res.json();
+      if (res.ok) {
+        setBookedSpots(data.bookedSpots || []);
+      }
+    } catch (err) {
+      console.error("Error fetching booked spots:", err);
+    }
   };
 
   const handleSpotSelect = (spot) => {
+    if (bookedSpots.includes(spot)) {
+      alert(`❌ Spot ${spot} is already booked!`);
+      return;
+    }
     setSelectedSpot(spot);
   };
 
+  // Confirm booking → open payment
   const handleConfirmSpot = () => {
-    alert(`✅ Booking confirmed for Spot ${selectedSpot}`);
+    if (!selectedSpot) return alert("Select a spot first!");
     setSpotOpen(false);
-    resetBookingForm();
+    setPaymentOpen(true);
+  };
+
+  // Final payment + API call
+  const handlePayment = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("❌ Please login first");
+        return;
+      }
+
+      const res = await fetch("http://localhost:5000/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...bookingData,
+          spot: selectedSpot,
+          area: selectedArea,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert("❌ Booking failed: " + data.message);
+        return;
+      }
+
+      alert(`✅ Payment successful! Spot ${selectedSpot} booked at ${selectedArea}`);
+      setPaymentOpen(false);
+      resetBookingForm();
+    } catch (err) {
+      console.error("Payment error:", err);
+      alert("❌ Something went wrong");
+    }
   };
 
   return (
@@ -194,85 +263,53 @@ function UserDashboard() {
 
       <main className="main-content">
         <h2 className="dashboard-title">Honk Less, Park More</h2>
-        <Explore openBooking={() => setBookingOpen(true)} />
+        <Explore openBooking={() => setAreaOpen(true)} />
       </main>
 
       <Footer />
 
-      {/* About Popup */}
-      {aboutOpen && (
-        <Popup title="About Us" closePopup={() => setAboutOpen(false)}>
-          <p>
-            Smart Parking System helps users easily find, book, and manage
-            parking spots efficiently.
-          </p>
-        </Popup>
-      )}
-
-      {/* Contact Popup */}
-      {contactOpen && (
-        <Popup
-          title="Contact Us"
-          closePopup={() => {
-            setContactOpen(false);
-            resetContactForm();
-          }}
+      {/* Area Selection Popup */}
+{areaOpen && (
+  <Popup
+    title="Choose Parking Area"
+    closePopup={() => setAreaOpen(false)}
+  >
+    <div className="area-grid">
+      {[
+        { name: "Chennai - Marina Beach", img: "/images/chennai.jpg" },
+        { name: "Bangalore - MG Road", img: "/images/bangalore.jpg" },
+        { name: "Mumbai - Gateway", img: "/images/mumbai.jpg" }
+      ].map((area) => (
+        <div
+          key={area.name}
+          className={`area-card ${selectedArea === area.name ? "selected" : ""}`}
+          onClick={() => setSelectedArea(area.name)}
         >
-          <form
-            className="contact-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              alert("✅ Feedback submitted successfully!");
-              setContactOpen(false);
-              resetContactForm();
-            }}
-          >
-            <div className="form-group">
-              <label>Name:</label>
-              <input
-                type="text"
-                name="name"
-                value={contactData.name}
-                onChange={(e) =>
-                  setContactData({ ...contactData, name: e.target.value })
-                }
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>Phone:</label>
-              <input
-                type="tel"
-                name="phone"
-                value={contactData.phone}
-                onChange={(e) =>
-                  setContactData({ ...contactData, phone: e.target.value })
-                }
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>Feedback:</label>
-              <textarea
-                name="feedback"
-                value={contactData.feedback}
-                onChange={(e) =>
-                  setContactData({ ...contactData, feedback: e.target.value })
-                }
-                required
-              />
-            </div>
-            <div className="contact-form-buttons">
-              <button type="submit" className="btn">Submit</button>
-            </div>
-          </form>
-        </Popup>
-      )}
+          <img src={area.img} alt={area.name} className="area-img" />
+          <h3>{area.name}</h3>
+        </div>
+      ))}
+    </div>
+
+    {selectedArea && (
+      <button
+        onClick={() => {
+          setAreaOpen(false);
+          setBookingOpen(true);
+        }}
+        className="btn"
+      >
+        Continue
+      </button>
+    )}
+  </Popup>
+)}
+
 
       {/* Booking Form Popup */}
       {bookingOpen && (
         <Popup
-          title="Book a Parking Spot"
+          title={`Book at ${selectedArea}`}
           closePopup={() => {
             setBookingOpen(false);
             resetBookingForm();
@@ -331,9 +368,9 @@ function UserDashboard() {
                 />
               </div>
             </div>
-            <div className="contact-form-buttons">
-              <button type="submit" className="btn">Select Spot</button>
-            </div>
+            <button type="submit" className="btn">
+              Select Spot
+            </button>
           </form>
         </Popup>
       )}
@@ -348,23 +385,43 @@ function UserDashboard() {
           }}
         >
           <div className="spot-grid">
-            {Array.from({ length: 20 }, (_, i) => `S${i + 1}`).map((spot) => (
-              <div
-                key={spot}
-                className={`parking-spot ${selectedSpot === spot ? "selected" : ""}`}
-                onClick={() => handleSpotSelect(spot)}
-              >
-                🚗 {spot}
-              </div>
-            ))}
+            {Array.from({ length: 20 }, (_, i) => `S${i + 1}`).map((spot) => {
+              const isBooked = bookedSpots.includes(spot);
+              const isSelected = selectedSpot === spot;
+
+              return (
+                <div
+                  key={spot}
+                  className={`parking-spot ${isBooked ? "booked" : ""} ${
+                    isSelected ? "selected" : ""
+                  }`}
+                  onClick={() => !isBooked && handleSpotSelect(spot)}
+                >
+                  {isBooked ? `❌ ${spot} (Booked)` : `🚗 ${spot}`}
+                </div>
+              );
+            })}
           </div>
-          {selectedSpot && (
-            <div className="confirm-container">
-              <button onClick={handleConfirmSpot} className="btn">
-                Confirm {selectedSpot}
-              </button>
-            </div>
+          {selectedSpot && !bookedSpots.includes(selectedSpot) && (
+            <button onClick={handleConfirmSpot} className="btn">
+              Confirm {selectedSpot}
+            </button>
           )}
+        </Popup>
+      )}
+
+      {/* Payment Popup */}
+      {paymentOpen && (
+        <Popup
+          title="Payment"
+          closePopup={() => setPaymentOpen(false)}
+        >
+          <p>
+            Amount: <strong>₹50</strong>
+          </p>
+          <button onClick={handlePayment} className="btn">
+            Pay & Confirm
+          </button>
         </Popup>
       )}
     </div>
