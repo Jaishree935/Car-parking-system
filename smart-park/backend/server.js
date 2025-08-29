@@ -9,7 +9,7 @@ const authRoutes = require("./routes/auth");
 const feedbackRoutes = require("./routes/feedback"); // 👈 added
 
 const app = express();
-const bookingRoutes = require("./routes/booking");
+
 // Middleware
 app.use(morgan("dev"));
 app.use(express.json());

@@ -142,9 +142,6 @@ function Popup({ title, children, closePopup }) {
       <div className="popup-box">
         <h2>{title}</h2>
         {children}
-        <button onClick={closePopup} className="btn-close">
-          Close
-        </button>
       </div>
     </div>
   );
@@ -152,10 +149,6 @@ function Popup({ title, children, closePopup }) {
 
 // ---------------- User Dashboard ----------------
 function UserDashboard() {
-  const [aboutOpen, setAboutOpen] = useState(false);
-  const [contactOpen, setContactOpen] = useState(false);
-
-  // Step states
   const [areaOpen, setAreaOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [spotOpen, setSpotOpen] = useState(false);
@@ -165,7 +158,6 @@ function UserDashboard() {
   const [selectedSpot, setSelectedSpot] = useState(null);
   const [bookedSpots, setBookedSpots] = useState([]);
 
-  // Booking form state
   const [bookingData, setBookingData] = useState({
     name: "",
     phone: "",
@@ -183,7 +175,6 @@ function UserDashboard() {
     setBookingData({ ...bookingData, [e.target.name]: e.target.value });
   };
 
-  // Submit booking form → open spot select
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
     setBookingOpen(false);
@@ -210,14 +201,12 @@ function UserDashboard() {
     setSelectedSpot(spot);
   };
 
-  // Confirm booking → open payment
   const handleConfirmSpot = () => {
     if (!selectedSpot) return alert("Select a spot first!");
     setSpotOpen(false);
     setPaymentOpen(true);
   };
 
-  // Final payment + API call
   const handlePayment = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -256,55 +245,56 @@ function UserDashboard() {
 
   return (
     <div className="dashboard">
-      <Header
-        openAbout={() => setAboutOpen(true)}
-        openContact={() => setContactOpen(true)}
-      />
-
+      <Header />
       <main className="main-content">
         <h2 className="dashboard-title">Honk Less, Park More</h2>
         <Explore openBooking={() => setAreaOpen(true)} />
       </main>
-
       <Footer />
 
       {/* Area Selection Popup */}
-{areaOpen && (
-  <Popup
-    title="Choose Parking Area"
-    closePopup={() => setAreaOpen(false)}
-  >
-    <div className="area-grid">
-      {[
-        { name: "Chennai - Marina Beach", img: "/images/chennai.jpg" },
-        { name: "Bangalore - MG Road", img: "/images/bangalore.jpg" },
-        { name: "Mumbai - Gateway", img: "/images/mumbai.jpg" }
-      ].map((area) => (
-        <div
-          key={area.name}
-          className={`area-card ${selectedArea === area.name ? "selected" : ""}`}
-          onClick={() => setSelectedArea(area.name)}
+      {areaOpen && (
+        <Popup
+          title="Choose Parking Area"
+          closePopup={() => setAreaOpen(false)}
         >
-          <img src={area.img} alt={area.name} className="area-img" />
-          <h3>{area.name}</h3>
-        </div>
-      ))}
-    </div>
+          <div className="area-popup-content">
+            <div className="area-grid">
+              {[
+                { name: "Chennai - Marina Beach", img: "/images/chennai.jpg" },
+                { name: "Bangalore - MG Road", img: "/images/bangalore.jpg" },
+                { name: "Mumbai - Gateway", img: "/images/mumbai.jpg" },
+              ].map((area) => (
+                <div
+                  key={area.name}
+                  className={`area-card ${selectedArea === area.name ? "selected" : ""}`}
+                  onClick={() => setSelectedArea(area.name)}
+                >
+                  <img src={area.img} alt={area.name} className="area-img" />
+                  <h3>{area.name}</h3>
+                </div>
+              ))}
+            </div>
 
-    {selectedArea && (
-      <button
-        onClick={() => {
-          setAreaOpen(false);
-          setBookingOpen(true);
-        }}
-        className="btn"
-      >
-        Continue
-      </button>
-    )}
-  </Popup>
-)}
-
+            <div className="popup-buttons">
+              {selectedArea && (
+                <button
+                  onClick={() => {
+                    setAreaOpen(false);
+                    setBookingOpen(true);
+                  }}
+                  className="btn"
+                >
+                  Continue
+                </button>
+              )}
+              <button onClick={() => setAreaOpen(false)} className="btn-close">
+                Close
+              </button>
+            </div>
+          </div>
+        </Popup>
+      )}
 
       {/* Booking Form Popup */}
       {bookingOpen && (
