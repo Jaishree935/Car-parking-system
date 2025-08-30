@@ -29,7 +29,6 @@ function Header({ openAbout, openContact }) {
     fetchUser();
   }, []);
 
-  // ✅ Logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -85,10 +84,7 @@ function Header({ openAbout, openContact }) {
                     <strong>Vehicle:</strong> {user.vehicleNumber}
                   </p>
                 )}
-                <button
-                  onClick={handleLogout}
-                  className="btn logout-btn"
-                >
+                <button onClick={handleLogout} className="btn logout-btn">
                   🚪 Logout
                 </button>
               </>
@@ -140,8 +136,13 @@ function Popup({ title, children, closePopup }) {
   return (
     <div className="popup-overlay">
       <div className="popup-box">
-        <h2>{title}</h2>
+        <h2 className="popup-heading">{title}</h2>
         {children}
+        <div style={{ marginTop: "16px" }}>
+          <button onClick={closePopup} className="btn-close">
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -153,6 +154,7 @@ function UserDashboard() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [spotOpen, setSpotOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false); // Contact Us popup
 
   const [selectedArea, setSelectedArea] = useState(null);
   const [selectedSpot, setSelectedSpot] = useState(null);
@@ -166,6 +168,12 @@ function UserDashboard() {
     time: "",
   });
 
+  const [feedbackData, setFeedbackData] = useState({
+    name: "",
+    email: "",
+    feedback: "",
+  });
+
   const resetBookingForm = () => {
     setBookingData({ name: "", phone: "", carNumber: "", date: "", time: "" });
     setSelectedSpot(null);
@@ -173,6 +181,10 @@ function UserDashboard() {
 
   const handleBookingChange = (e) => {
     setBookingData({ ...bookingData, [e.target.name]: e.target.value });
+  };
+
+  const handleFeedbackChange = (e) => {
+    setFeedbackData({ ...feedbackData, [e.target.name]: e.target.value });
   };
 
   const handleBookingSubmit = async (e) => {
@@ -243,27 +255,90 @@ function UserDashboard() {
     }
   };
 
+  const handleFeedbackSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("http://localhost:5000/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(feedbackData),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert("❌ Feedback failed: " + data.message);
+        return;
+      }
+
+      alert("✅ Feedback submitted successfully!");
+      setFeedbackData({ name: "", email: "", feedback: "" });
+      setContactOpen(false);
+    } catch (err) {
+      console.error("Error submitting feedback:", err);
+      alert("❌ Something went wrong!");
+    }
+  };
+
   return (
     <div className="dashboard">
-      <Header />
+      <Header openContact={() => setContactOpen(true)} />
       <main className="main-content">
         <h2 className="dashboard-title">Honk Less, Park More</h2>
         <Explore openBooking={() => setAreaOpen(true)} />
       </main>
       <Footer />
 
-      {/* Area Selection Popup */}
+      {/* ---------------- Contact Us Popup ---------------- */}
+      {contactOpen && (
+        <Popup title="Contact Us" closePopup={() => setContactOpen(false)}>
+          <form className="contact-form" onSubmit={handleFeedbackSubmit}>
+            <div className="form-group">
+              <label>Name:</label>
+              <input
+                type="text"
+                name="name"
+                value={feedbackData.name}
+                onChange={handleFeedbackChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Email:</label>
+              <input
+                type="email"
+                name="email"
+                value={feedbackData.email}
+                onChange={handleFeedbackChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Feedback:</label>
+              <textarea
+                name="feedback"
+                value={feedbackData.feedback}
+                onChange={handleFeedbackChange}
+                required
+              ></textarea>
+            </div>
+            <div className="contact-form-buttons">
+              <button type="submit" className="btn">
+                Submit
+              </button>
+            </div>
+          </form>
+        </Popup>
+      )}
+
+      {/* ---------------- Area Selection Popup ---------------- */}
       {areaOpen && (
-        <Popup
-          title="Choose Parking Area"
-          closePopup={() => setAreaOpen(false)}
-        >
+        <Popup title="Choose Parking Area" closePopup={() => setAreaOpen(false)}>
           <div className="area-popup-content">
             <div className="area-grid">
               {[
-                { name: "Chennai - Marina Beach", img: "/images/chennai.jpg" },
-                { name: "Bangalore - MG Road", img: "/images/bangalore.jpg" },
-                { name: "Mumbai - Gateway", img: "/images/mumbai.jpg" },
+                { name: "Chennai - International Airport", img: "/src/assets/chennai.png" },
+                { name: "Kochin - LULU Mall", img: "/src/assets/kochi.png" },
+                { name: "Bangalore - VR Bengaluru", img: "/src/assets/bangalore.png" },
               ].map((area) => (
                 <div
                   key={area.name}
@@ -288,15 +363,12 @@ function UserDashboard() {
                   Continue
                 </button>
               )}
-              <button onClick={() => setAreaOpen(false)} className="btn-close">
-                Close
-              </button>
             </div>
           </div>
         </Popup>
       )}
 
-      {/* Booking Form Popup */}
+      {/* ---------------- Booking Form Popup ---------------- */}
       {bookingOpen && (
         <Popup
           title={`Book at ${selectedArea}`}
@@ -365,7 +437,7 @@ function UserDashboard() {
         </Popup>
       )}
 
-      {/* Spot Selection Popup */}
+      {/* ---------------- Spot Selection Popup ---------------- */}
       {spotOpen && (
         <Popup
           title="Select Your Parking Spot"
@@ -400,12 +472,9 @@ function UserDashboard() {
         </Popup>
       )}
 
-      {/* Payment Popup */}
+      {/* ---------------- Payment Popup ---------------- */}
       {paymentOpen && (
-        <Popup
-          title="Payment"
-          closePopup={() => setPaymentOpen(false)}
-        >
+        <Popup title="Payment" closePopup={() => setPaymentOpen(false)}>
           <p>
             Amount: <strong>₹50</strong>
           </p>

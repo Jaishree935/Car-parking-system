@@ -5,10 +5,10 @@ const Feedback = require("../models/Feedback");
 // POST feedback
 router.post("/", async (req, res) => {
   try {
-    console.log("Incoming data:", req.body); // debug log
+    const { name, email, feedback } = req.body;
 
-    const { name, phone, feedback } = req.body;
-    const newFeedback = new Feedback({ name, phone, feedback });
+    // save directly with email
+    const newFeedback = new Feedback({ name, email, feedback });
     await newFeedback.save();
 
     res.status(201).json({ message: "Feedback saved" });

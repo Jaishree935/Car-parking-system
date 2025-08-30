@@ -83,15 +83,15 @@ function Popup({ title, children, closePopup }) {
 
 function AdminCards({ actions, openBookSlotPopup }) {
   const cards = [
-    { title: "Manage Users", icon: "👤", action: actions.openUsers },
-    { title: "Manage Bookings", icon: "📋", action: actions.openBookings },
-    { title: "Parking Spots", icon: "🚗", action: actions.openSpots },
-    { title: "Book Slot", icon: "🎫", action: openBookSlotPopup },
+    { title: "Manage Users",  action: actions.openUsers },
+    { title: "Manage Bookings", action: actions.openBookings },
+    { title: "Parking Spots",  action: actions.openSpots },
+    { title: "Book Slot",  action: openBookSlotPopup },
   ];
 
   return (
     <section id="manage" className="explore">
-      <h2>📊 Admin Controls</h2>
+     
       <div className="card-container">
         {cards.map((card) => (
           <div key={card.title} className="card">
@@ -115,7 +115,7 @@ function AdminCards({ actions, openBookSlotPopup }) {
 function SlotMonitor({ slots }) {
   return (
     <section id="slots" className="slot-monitor">
-      <h2>🚗 Live Parking Slots</h2>
+      
       <div className="slot-grid">
         {slots.map((slot) => (
           <div key={slot.id} className={`slot ${slot.status}`}>
@@ -136,14 +136,20 @@ function AdminDashboard() {
   const [selectedSlot, setSelectedSlot] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    fetch("http://localhost:5000/api/auth/profile", {
-      headers: { Authorization: `Bearer ${token}` },
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  fetch("http://localhost:5000/api/auth/me", {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("Fetched user:", data); // Debug check
+      setAdmin(data.user);   // 🔑 correct path
     })
-      .then((res) => res.json())
-      .then((data) => setAdmin(data.user))
-      .catch((err) => console.error("Profile fetch error:", err));
-  }, []);
+    .catch((err) => console.error("Profile fetch error:", err));
+}, []);
+
 
   useEffect(() => {
     const fetchSlots = () => {
