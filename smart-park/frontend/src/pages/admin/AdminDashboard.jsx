@@ -81,30 +81,33 @@ function Popup({ title, children, closePopup }) {
   );
 }
 
-function AdminCards({ actions, openBookSlotPopup }) {
+// ---------------- Admin Cards ----------------
+function AdminCards({ actions }) {
+  const navigate = useNavigate();
+
   const cards = [
-    { title: "Manage Users",  action: actions.openUsers },
+    { title: "Manage Users", action: actions.openUsers },
     { title: "Manage Bookings", action: actions.openBookings },
-    { title: "Parking Spots",  action: actions.openSpots },
-    { title: "Book Slot",  action: openBookSlotPopup },
+    { title: "Parking Spots", action: () => navigate("/live-feed") }, // 🚀 Separate Page
+    { title: "Book Slot", action: actions.openBookSlot },
   ];
 
   return (
     <section id="manage" className="explore">
-     
       <div className="card-container">
         {cards.map((card) => (
-          <div key={card.title} className="card">
-            <div className="card-icon">{card.icon}</div>
+          <div
+            key={card.title}
+            className="card"
+            onClick={card.action}
+            style={{ cursor: "pointer" }}
+          >
             <h3>{card.title}</h3>
             <p>
               {card.title === "Book Slot"
-                ? "Manually book a slot for a user"
+                ? "Manually book a slot"
                 : `Open ${card.title}`}
             </p>
-            <button className="btn" onClick={card.action}>
-              Open
-            </button>
           </div>
         ))}
       </div>
@@ -115,7 +118,6 @@ function AdminCards({ actions, openBookSlotPopup }) {
 function SlotMonitor({ slots }) {
   return (
     <section id="slots" className="slot-monitor">
-      
       <div className="slot-grid">
         {slots.map((slot) => (
           <div key={slot.id} className={`slot ${slot.status}`}>
@@ -136,20 +138,16 @@ function AdminDashboard() {
   const [selectedSlot, setSelectedSlot] = useState(null);
 
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (!token) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-  fetch("http://localhost:5000/api/auth/me", {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log("Fetched user:", data); // Debug check
-      setAdmin(data.user);   // 🔑 correct path
+    fetch("http://localhost:5000/api/auth/me", {
+      headers: { Authorization: `Bearer ${token}` },
     })
-    .catch((err) => console.error("Profile fetch error:", err));
-}, []);
-
+      .then((res) => res.json())
+      .then((data) => setAdmin(data.user))
+      .catch((err) => console.error("Profile fetch error:", err));
+  }, []);
 
   useEffect(() => {
     const fetchSlots = () => {
@@ -203,10 +201,8 @@ function AdminDashboard() {
           actions={{
             openUsers: () => openPopup("Manage Users"),
             openBookings: () => openPopup("Manage Bookings"),
-            openSpots: () => openPopup("Parking Spots"),
-            openFeedback: () => openPopup("Feedback"),
+            openBookSlot: openBookSlotPopup,
           }}
-          openBookSlotPopup={openBookSlotPopup}
         />
 
         <SlotMonitor slots={slots} />
@@ -222,9 +218,6 @@ function AdminDashboard() {
           {popup === "Manage Bookings" && (
             <p>Here admin can approve, reject or cancel bookings.</p>
           )}
-          {popup === "Parking Spots" && (
-            <p>Here admin can add/update/remove parking spots.</p>
-          )}
         </Popup>
       )}
 
@@ -233,7 +226,6 @@ function AdminDashboard() {
           title="Book Parking Slot"
           closePopup={() => setBookSlotOpen(false)}
         >
-          {/* Slot Grid Selection */}
           <h3>Select Your Parking Spot</h3>
           <div className="slot-grid booking-grid">
             {slots.map((slot) => (
@@ -251,7 +243,6 @@ function AdminDashboard() {
             ))}
           </div>
 
-          {/* Booking Form */}
           <form className="book-slot-form" onSubmit={handleSlotBooking}>
             <div>
               <label>Name:</label>

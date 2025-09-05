@@ -330,4 +330,22 @@ body, html {
     border-radius: 8px 8px 0 0;
     box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
   }
-  
+  .card:hover {
+    background-color: #f38383;
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+}
+
+/* Allow bigger popup for video */
+.popup-box {
+  max-width: 900px;   /* default was 500px; increased for video */
+}
+
+/* live feed image inside popup */
+.live-feed {
+  width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
+}

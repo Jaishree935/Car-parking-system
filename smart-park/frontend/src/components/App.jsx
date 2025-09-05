@@ -6,6 +6,7 @@ import Login from "./login.jsx";
 import Register from "./register.jsx";
 import UserDashboard from "../pages/user/UserDashboard.jsx";
 import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
+import LiveFeed from "./LiveFeed.jsx";
 
 function HomeHero() {
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ function App() {
 
       {/* Admin Dashboard */}
       <Route path="/dashboard/admin" element={<AdminDashboard />} />
-    
+    <Route path="/live-feed" element={<LiveFeed />} />
     </Routes>
   );
 }

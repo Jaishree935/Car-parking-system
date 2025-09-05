@@ -1,0 +1,16 @@
+names:
+- available space
+- car
+- cars
+- free
+- occupied
+nc: 5
+roboflow:
+  license: CC BY 4.0
+  project: object-detection-84rlm
+  url: https://universe.roboflow.com/jaiz/object-detection-84rlm/dataset/2
+  version: 2
+  workspace: jaiz
+test: ../test/images
+train: ../train/images
+val: ../valid/images
