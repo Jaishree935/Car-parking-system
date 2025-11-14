@@ -34,11 +34,11 @@ It also provides online slot booking, QR-based entry, and a real-time dashboard 
 
 Finding parking in urban cities leads to:
 
-    Time wastage,Traffic congestion,Fuel loss,No real-time slot availability
+        Time wastage,Traffic congestion,Fuel loss,No real-time slot availability
 
 Traditional sensor-based parking systems are:
 
-  Expensive,Hard to scale,Require complex hardware
+      Expensive,Hard to scale,Require complex hardware
 
 💡 Our Solution
 
@@ -49,85 +49,78 @@ We replace the entire sensor-based system with:
     Online booking + automated slot management
 
 This reduces:
-
-  Cost
-  Hardware
-  Human involvement 
+      Cost
+      Hardware
+      Human involvement 
 
 And provides:
-  Accurate real-time availability
-  Better user experience
-  Smart city–ready infrastructure
+      Accurate real-time availability
+      Better user experience
+      Smart city–ready infrastructure
 
 🧠 Technology Stack
 Frontend
-
-  React.js
-  HTML, CSS
-  qrcode.js
-  
+      React.js
+      HTML, CSS
+      qrcode.js
 Backend
-
-  Flask (YOLO inference + real-time slot update)
-  Express.js (user auth + booking API)
-  Socket.IO
-
+      Flask (YOLO inference + real-time slot update)
+      Express.js (user auth + booking API)
+      Socket.IO
 AI / Computer Vision
-
-  YOLOv8
-  OpenCV
-  Custom parking dataset
-
+      YOLOv8
+      OpenCV
+      Custom parking dataset
 Database
-  MongoDB
+      MongoDB
 
 🏗️ System Architecture
 Frontend
-    Shows live layout → users choose slot → booking → payment → QR generated
+        Shows live layout → users choose slot → booking → payment → QR generated
 Backend
-    Receives video → YOLO detects slot status → sends real-time updates → stores in DB
+        Receives video → YOLO detects slot status → sends real-time updates → stores in DB
 Database
 Stores:
-  Users
-  Bookings
-  Payments
-  Slot availability
-  QR code validation
+      Users
+      Bookings
+      Payments
+      Slot availability
+      QR code validation
 
 🔄 Workflow
 
-  User logs in
-  Views live parking layout
-  Selects slot & time
-  Completes online payment
-  Receives QR code
-  On arrival → scans QR
-  System confirms booking
-  Slot marked as occupied
-  After exit → slot marked free again
+      User logs in
+      Views live parking layout
+      Selects slot & time
+      Completes online payment
+      Receives QR code
+      On arrival → scans QR
+      System confirms booking
+      Slot marked as occupied
+      After exit → slot marked free again
 
 📦 Installation
 
 1.Clone the repo
-    git clone https://github.com/your-username/smart-parking
-    cd smart-parking
+        git clone https://github.com/your-username/smart-parking
+        cd smart-parking
 2.Backend setup
-    pip install -r requirements.txt
-    python app.py
+        pip install -r requirements.txt
+        python app.py
 3.Frontend setup
-    cd frontend
-    npm install
-    npm start
+        cd frontend
+        npm install
+        npm start
 
 🧪 Model Training
-    Collected parking images from CCTV/Sample videos
-    Annotated slot status (free/occupied)
-    Trained YOLOv8
-    Evaluated using Accuracy, Precision, Recall
+        Collected parking images from CCTV/Sample videos
+        Annotated slot status (free/occupied)
+        Trained YOLOv8
+        Evaluated using Accuracy, Precision, Recall
 
 🛠️ Future Enhancements
 
-    AR-based navigation to guide users to nearest free slot
-    Multi-level parking support
-    Automatic number plate recognition (ANPR)
-    Prediction of future slot availability
+        AR-based navigation to guide users to nearest free slot
+        Multi-level parking support
+        Automatic number plate recognition (ANPR)
+        Prediction of future slot availability
