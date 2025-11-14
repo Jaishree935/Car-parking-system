@@ -59,28 +59,42 @@ And provides:
       Smart city–ready infrastructure
 
 🧠 Technology Stack
+
 Frontend
+
       React.js
       HTML, CSS
       qrcode.js
+
 Backend
+
       Flask (YOLO inference + real-time slot update)
       Express.js (user auth + booking API)
       Socket.IO
+
 AI / Computer Vision
+      
       YOLOv8
       OpenCV
       Custom parking dataset
+
 Database
+ 
       MongoDB
 
 🏗️ System Architecture
+
 Frontend
+
         Shows live layout → users choose slot → booking → payment → QR generated
+
 Backend
+
         Receives video → YOLO detects slot status → sends real-time updates → stores in DB
+
 Database
 Stores:
+
       Users
       Bookings
       Payments
